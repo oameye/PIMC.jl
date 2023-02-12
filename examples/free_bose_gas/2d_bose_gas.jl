@@ -1,5 +1,4 @@
-using Pimc
-using StatsBase
+using Pimc, StatsBase
 
 include(pwd()*"/examples/tools/logtools.jl")
 
@@ -19,7 +18,7 @@ function main(M, N, T)
     n = 20_000
     times = 10
     Zupdates = [
-        (1, PolymerCenterOfMass(s, 1.0)),
+        (1, SingleCenterOfMass(s, 1.0)),
         (1, ReshapeLinear(s, 20))
         # (1, ReshapeSwapLinear(s, 20))
     ]

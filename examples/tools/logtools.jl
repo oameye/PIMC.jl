@@ -28,8 +28,10 @@ function info(updates::Updates)
 end
 
 function info(s::System)
-    worms = s.worm_algorithm ? "Worm Algorithm" : "No Worm Algorithm"
-    ens = s.gc ? "Grand canonical" : "Canonical"
+    # worms = s.worm_algorithm ? "Worm Algorithm" : "No Worm Algorithm"
+    worms = "No Worm Algorithm"
+    # ens = s.gc ? "Grand canonical" : "Canonical"
+    ens = "Canonical"
     items = join([
             "Number of time slices M = $(s.M)",
             "Chemical potential    μ = $(s.μ)",

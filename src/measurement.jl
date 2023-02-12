@@ -34,9 +34,9 @@ end
 function (u::Energy)(s::System)
     p = s.world
 
-    if s.worms > 0
-        error("Energy can only be measured in the Z-sector.")
-    end
+    # if s.worms > 0
+    #     error("Energy can only be measured in the Z-sector.")
+    # end
 
     link, pot = 0, 0
     vkin, vpot = 0, 0
