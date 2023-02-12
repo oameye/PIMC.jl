@@ -1,4 +1,4 @@
-#TODO write nn with CartesianIndices and SMatrix
+
 
 """
 	bin_index(x::Int64, y::Int64, w::Int64)::Int64
