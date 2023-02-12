@@ -21,7 +21,7 @@ export Worldline, Particle, Worm, levy!, distance, SectorCounter, update_nnbins!
 export permutations, subcycle, pcycle, Update, Updates
 export Counter, Step, NumbOfLevels, NumbOfSlices, Threshold
 export SingleBead, SingleCenterOfMass, PolymerCenterOfMass, ReshapeLinear, ReshapeSwapLinear, DummyUpdate, Update, UpdateWorm
-export add_worm_updates, Insert, Remove, OpenGC, CloseGC, OpenHeadC, OpenTailC, CloseHeadC, CloseTailC, Advance, Recede, Swap, MoveHead, MoveTail, SwapC
+# export add_worm_updates, Insert, Remove, OpenGC, CloseGC, OpenHeadC, OpenTailC, CloseHeadC, CloseTailC, Advance, Recede, Swap, MoveHead, MoveTail, SwapC
 
 #measurements
 export Density, NumbOfParticle, Measurement, GMeasurement, ZMeasurement, Energy, ZG_ratio, SuperFluid
@@ -31,7 +31,7 @@ abstract type Measurement end
 abstract type GMeasurement <: Measurement end
 abstract type ZMeasurement <: Measurement end
 abstract type Update end
-abstract type UpdateWorm <: Update end
+# abstract type UpdateWorm <: Update end
 abstract type UpdateC <: Update end
 
 allowmissing(x::AbstractArray{T}) where {T} = convert(AbstractArray{Union{T,Missing}}, x)
@@ -43,20 +43,20 @@ include("nn.jl")
 include("updates/helper.jl")
 include("updates/com.jl")
 include("updates/reshape.jl")
-include("updates/worms/worms_help.jl")
-include("updates/worms/insert-remove.jl")
-include("updates/worms/open-close.jl")
-include("updates/worms/canonical/open-close_canonical.jl")
-include("updates/worms/advance-recede.jl")
-include("updates/worms/canonical/move_head-tail.jl")
-include("updates/worms/swap_better.jl")
+# include("updates/worms/worms_help.jl")
+# include("updates/worms/insert-remove.jl")
+# include("updates/worms/open-close.jl")
+# include("updates/worms/canonical/open-close_canonical.jl")
+# include("updates/worms/advance-recede.jl")
+# include("updates/worms/canonical/move_head-tail.jl")
+# include("updates/worms/swap_better.jl")
 include("measurement.jl")
 
 # Perform updates/measurements to the system.
 # Each function comes with an integer that denotes the frequency of the Update.
 Updates = Vector{Tuple{Int64,A}} where {A <: Update}
-UpdatesWorm = Vector{Tuple{Int64,A}} where {A <: UpdateWorm}
-GMeasurements = Vector{A} where {A <: GMeasurement}
+# UpdatesWorm = Vector{Tuple{Int64,A}} where {A <: UpdateWorm}
+# GMeasurements = Vector{A} where {A <: GMeasurement}
 ZMeasurements = Vector{A} where {A <: ZMeasurement}
 Measurements =  Vector{A} where {A <: Measurement}
 
@@ -70,13 +70,13 @@ function queue!(c::Counter, acc::Bool)::Nothing
     end
     nothing
 end
-function queue!(c::SectorCounter, acc::Bool)::Nothing
-    enqueue!(c.queue, acc ? 1 : 0)
-    if length(c.queue) > c.range
-        _ = dequeue!(c.queue)
-    end
-    nothing
-end
+# function queue!(c::SectorCounter, acc::Bool)::Nothing
+#     enqueue!(c.queue, acc ? 1 : 0)
+#     if length(c.queue) > c.range
+#         _ = dequeue!(c.queue)
+#     end
+#     nothing
+# end
 
 function measurement_Z_sector(s::System, measurements::ZMeasurements)::Nothing
     if isempty(measurements)
@@ -100,23 +100,23 @@ function measurement_Z_sector(s::System, measurements::ZMeasurements)::Nothing
     nothing
 end
 
-function measurement_G_sector(s::System, measurements::GMeasurements)::Nothing
-    if isempty(measurements)
-        return nothing
-    end
-    if 0 ∉ keys(s.Nctr)
-        s.Nctr[0]=0
-        s.N_MC[0]=0
-    end
-    s.Nctr[0] += 1
-    if length(measurements)==1 && measurements[1] isa ZG_ratio
-        apply!(s, measurements)
-    elseif s.Nctr[0] % s.Ncycle == 0 && s.worms==0
-        s.N_MC[0] += 1
-        apply!(s, measurements)
-    end
-    nothing
-end
+# function measurement_G_sector(s::System, measurements::GMeasurements)::Nothing
+#     if isempty(measurements)
+#         return nothing
+#     end
+#     if 0 ∉ keys(s.Nctr)
+#         s.Nctr[0]=0
+#         s.N_MC[0]=0
+#     end
+#     s.Nctr[0] += 1
+#     if length(measurements)==1 && measurements[1] isa ZG_ratio
+#         apply!(s, measurements)
+#     elseif s.Nctr[0] % s.Ncycle == 0 && s.worms==0
+#         s.N_MC[0] += 1
+#         apply!(s, measurements)
+#     end
+#     nothing
+# end
 
 function apply!(s::System, fs::Measurements)::Nothing
     for f in fs
@@ -133,17 +133,17 @@ function apply!(s::System, f::UpdateC)::Nothing
     end
     nothing
 end
-function apply!(s::System, f::UpdateWorm)::Nothing
-    acc = f(s)
-    queue!(f.counter, acc)
+# function apply!(s::System, f::UpdateWorm)::Nothing
+#     acc = f(s)
+#     queue!(f.counter, acc)
 
-    if s.modifyW
-        if f.counter_var.tries % f.counter_var.adj == 0
-            adjust!(f.var, acceptance(f.counter_var.queue))
-        end
-    end
-    nothing
-end
+#     if s.modifyW
+#         if f.counter_var.tries % f.counter_var.adj == 0
+#             adjust!(f.var, acceptance(f.counter_var.queue))
+#         end
+#     end
+#     nothing
+# end
 
 # # Loop for updates and measurements.
 # # In the thermalization phase we do not measurements
@@ -161,9 +161,9 @@ end
 #     nothing
 # end
 
-function run!(s::System, n::Int64, updates::Updates; Zmeasurements::ZMeasurements = ZMeasurement[], Gmeasurements::GMeasurements = GMeasurement[])::Nothing
+function run!(s::System, n::Int64, updates::Updates; Zmeasurements::ZMeasurements = ZMeasurement[])::Nothing
     # number of tries to sample beads outside hardsphere; smaller than in thermalization phase
-    therm = isempty(Zmeasurements) && isempty(Gmeasurements) ? true : false
+    therm = isempty(Zmeasurements) ? true : false
     s.ctr = therm ? 10_000 : 1_000
     (every, fs) = unzip(updates)
     weights = Weights(1 ./ every)
@@ -171,93 +171,108 @@ function run!(s::System, n::Int64, updates::Updates; Zmeasurements::ZMeasurement
         f = sample(fs, weights)
         apply!(s, f)
 
-        if s.worms==0 && !s.gc && s.Ninit != s.N
-            error("N=$(s.N)")
-        end
-
-
-        # equilibriated sampling between Z-G sector
-        if s.worm_algorithm && !therm
-            queue!(s.C, s.worms > 0)
-            # if n % s.C.adj == 0 && s.C.modifyC && length(c.queue) > c.range
-            #     adjust!(s.C)
-            # end
-        end
-
-        measurement_G_sector(s, Gmeasurements)
         measurement_Z_sector(s, Zmeasurements)
     end
     nothing
 end
 
-function run!(s::System, n::Int64, zg_ratio::ZG_ratio)::Nothing
-    # number of tries to sample beads outside hardsphere; smaller than in thermalization phase
-    s.ctr = 1_000
+# function run!(s::System, n::Int64, updates::Updates; Zmeasurements::ZMeasurements = ZMeasurement[], Gmeasurements::GMeasurements = GMeasurement[])::Nothing
+#     # number of tries to sample beads outside hardsphere; smaller than in thermalization phase
+#     therm = isempty(Zmeasurements) && isempty(Gmeasurements) ? true : false
+#     s.ctr = therm ? 10_000 : 1_000
+#     (every, fs) = unzip(updates)
+#     weights = Weights(1 ./ every)
+#     for _ = 1:n
+#         f = sample(fs, weights)
+#         apply!(s, f)
 
-    OC = Threshold(1, 1, s.M-1, 0.4, 0.6)
-    # AR = Threshold(10, 1, s.M-1, 0.4, 0.6)
-    worms = [
-        (1,    Open(OC, adj = 1, range = 10_000)),
-        (1,   Close(OC, adj = 1, range = 10_000)),
-        # (1, MoveHead(AR, adj = 1, range = 10_000)),
-        # (1, MoveTail(AR, adj = 1, range = 10_000))
-    ]
+#         if s.worms==0 && !s.gc && s.Ninit != s.N
+#             error("N=$(s.N)")
+#         end
 
-    (every, fs) = unzip(worms)
-    weights = Weights(1 ./ every)
-    for _ = 1:n
-        f = sample(fs, weights)
-        _ = f(s)
-        measurement_G_sector(s, [zg_ratio])
-    end
-    nothing
-end
+
+#         # equilibriated sampling between Z-G sector
+#         if s.worm_algorithm && !therm
+#             queue!(s.C, s.worms > 0)
+#             # if n % s.C.adj == 0 && s.C.modifyC && length(c.queue) > c.range
+#             #     adjust!(s.C)
+#             # end
+#         end
+
+#         measurement_G_sector(s, Gmeasurements)
+#         measurement_Z_sector(s, Zmeasurements)
+#     end
+#     nothing
+# end
+
+# function run!(s::System, n::Int64, zg_ratio::ZG_ratio)::Nothing
+#     # number of tries to sample beads outside hardsphere; smaller than in thermalization phase
+#     s.ctr = 1_000
+
+#     OC = Threshold(1, 1, s.M-1, 0.4, 0.6)
+#     # AR = Threshold(10, 1, s.M-1, 0.4, 0.6)
+#     worms = [
+#         (1,    Open(OC, adj = 1, range = 10_000)),
+#         (1,   Close(OC, adj = 1, range = 10_000)),
+#         # (1, MoveHead(AR, adj = 1, range = 10_000)),
+#         # (1, MoveTail(AR, adj = 1, range = 10_000))
+#     ]
+
+#     (every, fs) = unzip(worms)
+#     weights = Weights(1 ./ every)
+#     for _ = 1:n
+#         f = sample(fs, weights)
+#         _ = f(s)
+#         measurement_G_sector(s, [zg_ratio])
+#     end
+#     nothing
+# end
 
 function unzip(a)
     (getfield.(a, x) for x in fieldnames(eltype(a)))
 end
 
-function add_worm_updates(s::System, updates::Updates;
-    m::Int64 = 2,
-    min::Int64 = 1, max::Int64 = s.M-1,
-    minacc::Float64 = 0.4, maxacc::Float64 = 0.6,
-    adj::Int64 = 1,
-    range::Int64 = 10_000)::Tuple{Updates, Updates}
-    if s.worm_algorithm
-        IR = Threshold(m, min, max, minacc, maxacc)
-        OC = Threshold(m, min, max, minacc, maxacc)
-        AR = Threshold(m, min, max, minacc, maxacc)
-        SW = NumbOfSlices(m, min, max, minacc, maxacc)
-        if s.gc
-            worms = [
-                (1,  Insert(IR, adj = adj, range = range)),
-                (1,  Remove(IR, adj = adj, range = range)),
-                (1,    OpenGC(OC, adj = adj, range = range)),
-                (1,   CloseGC(OC, adj = adj, range = range)),
-                (1, Advance(AR, adj = adj, range = range)),
-                (1,  Recede(AR, adj = adj, range = range)),
-                (1,    SwapC(SW, adj = adj, range = range))
-            ]
-        else
-            worms = [
-                (1,    OpenGC(OC, adj = adj, range = range)),
-                (1,   CloseGC(OC, adj = adj, range = range)),
-                # (1,    OpenHeadC(OC, adj = adj, range = range)),
-                # (1,   CloseHeadC(OC, adj = adj, range = range)),
-                # (1,    MoveHead(AR, adj = adj, range = range))
-                (1,    Insert(IR, adj = adj, range = range)),
-                (1,    Remove(IR, adj = adj, range = range)),
-                (1,   Advance(AR, adj = adj, range = range)),
-                (1,    Recede(AR, adj = adj, range = range)),
-                (1,     SwapC(SW, adj = adj, range = range))
-            ]
-        end
-        updates = Vector{Tuple{Int64, Update}}(union(updates, worms))
-    else
-        error("Cannot add worm updates to a system which does not use worm algorithm")
-    end
-    return updates, worms
-end
+# function add_worm_updates(s::System, updates::Updates;
+#     m::Int64 = 2,
+#     min::Int64 = 1, max::Int64 = s.M-1,
+#     minacc::Float64 = 0.4, maxacc::Float64 = 0.6,
+#     adj::Int64 = 1,
+#     range::Int64 = 10_000)::Tuple{Updates, Updates}
+#     if s.worm_algorithm
+#         IR = Threshold(m, min, max, minacc, maxacc)
+#         OC = Threshold(m, min, max, minacc, maxacc)
+#         AR = Threshold(m, min, max, minacc, maxacc)
+#         SW = NumbOfSlices(m, min, max, minacc, maxacc)
+#         if s.gc
+#             worms = [
+#                 (1,  Insert(IR, adj = adj, range = range)),
+#                 (1,  Remove(IR, adj = adj, range = range)),
+#                 (1,    OpenGC(OC, adj = adj, range = range)),
+#                 (1,   CloseGC(OC, adj = adj, range = range)),
+#                 (1, Advance(AR, adj = adj, range = range)),
+#                 (1,  Recede(AR, adj = adj, range = range)),
+#                 (1,    SwapC(SW, adj = adj, range = range))
+#             ]
+#         else
+#             worms = [
+#                 (1,    OpenGC(OC, adj = adj, range = range)),
+#                 (1,   CloseGC(OC, adj = adj, range = range)),
+#                 # (1,    OpenHeadC(OC, adj = adj, range = range)),
+#                 # (1,   CloseHeadC(OC, adj = adj, range = range)),
+#                 # (1,    MoveHead(AR, adj = adj, range = range))
+#                 (1,    Insert(IR, adj = adj, range = range)),
+#                 (1,    Remove(IR, adj = adj, range = range)),
+#                 (1,   Advance(AR, adj = adj, range = range)),
+#                 (1,    Recede(AR, adj = adj, range = range)),
+#                 (1,     SwapC(SW, adj = adj, range = range))
+#             ]
+#         end
+#         updates = Vector{Tuple{Int64, Update}}(union(updates, worms))
+#     else
+#         error("Cannot add worm updates to a system which does not use worm algorithm")
+#     end
+#     return updates, worms
+# end
 
 # function worm_updates(s::System;
 #     m::Int64 = 5,
@@ -502,25 +517,25 @@ end
 #     end
 # end
 
-function debugpermlist(s::System)
-    perm = Vector{String}(undef, length(s.world))
-    for (i,p) in pairs(s.world)
-        if isa(p, Pimc.Worm)
-            if !iszero(p.tail) && !iszero(p.head)
-                perm[i] = "W"
-            elseif iszero(p.tail)
-                perm[i] = "H"
-            elseif iszero(p.head)
-                perm[i] = "T$(p.next)"
-            else
-                @error "Not a worm"
-            end
-        else
-            perm[i] = "$(p.next)"
-        end
-    end
-    return perm
-end
+# function debugpermlist(s::System)
+#     perm = Vector{String}(undef, length(s.world))
+#     for (i,p) in pairs(s.world)
+#         if isa(p, Pimc.Worm)
+#             if !iszero(p.tail) && !iszero(p.head)
+#                 perm[i] = "W"
+#             elseif iszero(p.tail)
+#                 perm[i] = "H"
+#             elseif iszero(p.head)
+#                 perm[i] = "T$(p.next)"
+#             else
+#                 @error "Not a worm"
+#             end
+#         else
+#             perm[i] = "$(p.next)"
+#         end
+#     end
+#     return perm
+# end
 
 # function wordline_zero(s::System, f::String)
 #     for (i, p) in pairs(s.world)
