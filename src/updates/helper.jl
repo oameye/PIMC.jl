@@ -233,28 +233,28 @@ function sampleparticles(s::System, j₀::Int64, m::Int64)::Tuple{Int64,Int64}
     for i in 1:s.N
         Npol, pol = subcycle(s.world, i)
         nᵢnext = pcycle(j₀ + m, pol, Npol, s.M)
-        if s.world[nᵢnext] isa Worm
-            t[i] = -Inf
-        else
-            t[i] = s.lnK(
-                s.world[n1].r[j₀, :],
-                s.world[nᵢnext].r[mod1(j₀ + m, s.M), :],
-                m * s.τ)
-        end
+        # if s.world[nᵢnext] isa Worm
+        #     t[i] = -Inf
+        # else
+        t[i] = s.lnK(
+            s.world[n1].r[j₀, :],
+            s.world[nᵢnext].r[mod1(j₀ + m, s.M), :],
+            m * s.τ)
+        # end
     end
 
     y = zeros(s.N)
     for i in 1:s.N
         Npol, pol = subcycle(s.world, n1)
         n1next =pcycle(j₀ + m, pol, Npol, s.M)
-        if s.world[n1next] isa Worm
-            y[i] = -Inf
-        else
-            y[i] = s.lnK(
-                s.world[i].r[j₀, :],
-                s.world[n1next].r[mod1(j₀ + m, s.M), :],
-                m * s.τ)
-        end
+        # if s.world[n1next] isa Worm
+        #     y[i] = -Inf
+        # else
+        y[i] = s.lnK(
+            s.world[i].r[j₀, :],
+            s.world[n1next].r[mod1(j₀ + m, s.M), :],
+            m * s.τ)
+        # end
     end
 
     norm = sum(exp.(t + y))

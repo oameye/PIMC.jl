@@ -147,14 +147,14 @@ function (u::SingleCenterOfMass)(s::System)::Bool
             push!(singleparticles, i)
         end
     end
-    if s.worms > 0
-        ntail = rand(findall(i -> isa(i, Worm) && !iszero(i.tail), s.world))
-        _, pol = subcycle(s.world, ntail)
-        wlen = lengthpolymer(s.world, pol)
-        if wlen <= s.M
-            push!(singleparticles, ntail)
-        end
-    end
+    # if s.worms > 0
+    #     ntail = rand(findall(i -> isa(i, Worm) && !iszero(i.tail), s.world))
+    #     _, pol = subcycle(s.world, ntail)
+    #     wlen = lengthpolymer(s.world, pol)
+    #     if wlen <= s.M
+    #         push!(singleparticles, ntail)
+    #     end
+    # end
     if isempty(singleparticles)
         return acc
     end
@@ -205,7 +205,8 @@ function (u::SingleCenterOfMass)(s::System)::Bool
         acc = true
 
         nlast = pol[Npol]
-        mlast = isa(s.world[nlast], Worm) ?  s.world[nlast].head : 0
+        # mlast = isa(s.world[nlast], Worm) ? s.world[nlast].head : 0
+        mlast = 0
 
         for (i, n) in pairs(pol)
             for j in eachindex(skipmissing(s.world[n].r[:, 1]))

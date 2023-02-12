@@ -1,12 +1,3 @@
-mutable struct Worm <: Worldline
-    r::Matrix{Union{Missing,Float64}}
-    V::Vector{Union{Missing,Float64}}
-    bins::Vector{Union{Missing,Int64}}
-    tail::Int64 #Masha
-    head::Int64 #Ira
-    next::Int64
-end
-
 mutable struct Particle <: Worldline
     r::Matrix{Float64}
     V::Vector{Float64}
@@ -99,45 +90,6 @@ function init_nn(world::Vector{Worldline}, M::Int64, dim::Int64, L::Float64, r�
     return nn, nbs, nbins
 end
 
-mutable struct SectorCounter
-    C::Float64
-    C′::Float64
-    min::Float64
-    max::Float64
-    queue::Queue{Bool}
-    range::Int64
-    minacc::Float64
-    maxacc::Float64
-    adj::Int64
-    modifyC::Bool
-
-    function SectorCounter(C; C′= 1, min = 1e-30, max = 1e4, range = 50_000, minacc = 0.30, maxacc = 0.70, adj = 1, modifyC=true)
-        new(C, C′, min, max, Queue{Bool}(), range, minacc, maxacc, adj, modifyC)
-    end
-
-    function SectorCounter()
-        new(0.0, 0.0, 0.0, 0.0, Queue{Bool}(), 0, 0.0, 0.0, 0, false)
-    end
-end
-
-function adjust!(m::SectorCounter)::Nothing
-    acc = acceptance(m.queue)
-    if acc < m.minacc
-        m.C′ *= 1.1
-    elseif acc > m.maxacc
-        m.C′ *= 0.9
-    end
-
-    # Keep within bounds
-    m.C′ = max(m.min, m.C′)
-    m.C′ = min(m.max, m.C′)
-    return nothing
-end
-
-function get_C(m::SectorCounter)::Float64
-    return m.C*m.C′
-end
-
 mutable struct System
     dim::Int64 # dimensions
     M::Int64 # Number of time slices
@@ -168,13 +120,6 @@ mutable struct System
     a::Float64 # The cut-off hardsphere parameter (2D scattering length)
     ctr::Int64 # number of tries to sample beads outside hardsphere
 
-    gc::Bool # bool if we us use the grand-canonical ensemble or not
-    worm_algorithm::Bool # bool if we us use the WA or not
-    worms::Int64 # number of worldlines Masha and Ira are using
-    modifyW::Bool
-    C::SectorCounter # a struct wich keeps track of the ratio between off- and diagonal configuration
-    Nz::Int64 # number of particles in the Z-sector
-
     measure_scheme::Symbol # symbol wich indicates which measure scheme to use
     N_MC::Dict{Int64, Int64} # dictionairies of the number of measurement taken
     Nctr::Dict{Int64, Int64} # dictionairy of counter which determines if we take a measurement
@@ -195,12 +140,6 @@ mutable struct System
         propint::Function = _ -> 0.0,
         g::Float64 = 0.0,
         rₐ::Float64 = 0.0,
-        gc::Bool = false,
-        worms::Bool = false,
-        C::Float64 = 0.0,
-        SC::SectorCounter = SectorCounter(),
-        modifyC = false,
-        modifyW = false,
         length_measurement_cycle::Int64 = 10,
         measure_scheme::Symbol = :c
     )
@@ -209,25 +148,10 @@ mutable struct System
         τ = β / M
         vol = (2 * L)^dim
 
-        if gc && !worms
-            error("In the grand-canonical ensemble one has to use Worm Algorithm")
-        elseif !gc
-            μ = 0.0
-        elseif worms && gc && μ==0.0
-            error("The chemical potential μ is zero.")
-        end
-
         a = interactions ? exp(-2 * pi / g) : 0.0
-
-        if SC.C == 0
-            SC = C == 0.0 ? SectorCounter(τ / (vol * M), modifyC=modifyC) : SectorCounter(C, modifyC=modifyC)
-        end
 
         # Random initial positions for each particle
         world = init_world(potential, N, M, dim, L, τ, a, λ)
-        # if isempty(world)
-        #     error("creating world of $(N) particles with hardspheres of length $(a) in the volume $((2*L)^dim) failed!")
-        # end
 
         rₐ, lnU = init_int(interactions, propint, τ, L, rₐ, λ, μ)
 
@@ -239,7 +163,6 @@ mutable struct System
             (x1, x2, τ) -> lnK(x1, x2, λ, τ, L),
             (x1, x2) -> lnU(x1, x2, τ),
             a, 10_000,
-            gc, worms, 0, modifyW, SC, N,
             measure_scheme, Dict{Int64, Int64}([(N, 0)]), Dict{Int64, Int64}([(N, 0)]), length_measurement_cycle)
     end
 end

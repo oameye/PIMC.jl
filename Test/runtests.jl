@@ -1,10 +1,19 @@
-# Import instead of using to make identify our functions easier in the code
-using Pimc
-using Test
-using Logging
+using Pkg
+current_path = @__DIR__
+Pkg.activate(current_path * "/../.");
 
-include("testsystem.jl")
-include("testmeasurements.jl")
-include("testupdates.jl")
-include("testworms.jl")
+using Pimc, Test, Logging
 
+files = [
+    "testpotential.jl",
+    "testsystem.jl",
+    "testmeasurements.jl",
+    "testupdates.jl"
+    ]
+
+for file in files
+    include(file)
+    printstyled(file * ":    OK\n"; color = :green)
+end
+
+printstyled("\nALL TESTS PASSED!\n"; color = :green)

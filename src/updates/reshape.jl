@@ -45,13 +45,13 @@ function (u::ReshapeLinear)(s::System)::Bool
     m = min(u.var.maxslices, rand(2:u.var.m)) # smaller than s.M
     jₘ = j₀ + m
 
-    if s.worms > 0 && length(s.world) ∈ cycle[1:Ncycle]
-        jhead = s.world[end].head
-        mj = (s.M - j₀) + (Ncycle-2)*s.M + jhead
-        if mj < m
-            return acc
-        end
-    end
+    # if s.worms > 0 && length(s.world) ∈ cycle[1:Ncycle]
+    #     jhead = s.world[end].head
+    #     mj = (s.M - j₀) + (Ncycle-2)*s.M + jhead
+    #     if mj < m
+    #         return acc
+    #     end
+    # end
 
     r′ = zeros(Float64, m + 1, s.dim)
     r′[1, :] = s.world[n].r[j₀, :]
@@ -109,7 +109,7 @@ struct ReshapeSwapLinear <: UpdateC
         minacc = 0.6,
         maxacc = 0.8,
         adj = 10,
-        range = 10_000 
+        range = 10_000
     )
 
         new(
@@ -140,9 +140,9 @@ function (u::ReshapeSwapLinear)(s::System)::Bool
     fpcycle1(j::Int64) = pcycle(j, pol1, Npol1, s.M)
     fpcycle2(j::Int64) = pcycle(j, pol2, Npol2, s.M)
 
-    if s.world[fpcycle2(jₘ)] isa Worm || s.world[fpcycle1(jₘ)] isa Worm
-        return acc
-    end
+    # if s.world[fpcycle2(jₘ)] isa Worm || s.world[fpcycle1(jₘ)] isa Worm
+    #     return acc
+    # end
 
     r1 = zeros(Float64, m + 1, s.dim)
     r2 = zeros(Float64, m + 1, s.dim)

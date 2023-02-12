@@ -1,4 +1,4 @@
-# write nn with CartesianIndices and SMatrix
+#TODO write nn with CartesianIndices and SMatrix
 
 """
 	bin_index(x::Int64, y::Int64, w::Int64)::Int64
@@ -257,6 +257,3 @@ function fixindexing_nn!(nn::NearestNeighbors, n::Int64, n′::Int64, bins::Vect
         push!(nn[j][b], n′)
     end
 end
-
-
-

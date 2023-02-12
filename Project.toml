@@ -1,6 +1,6 @@
 name = "Pimc"
 uuid = "ce3d1cd1-45f8-4efe-b1db-b3bff741270c"
-authors = ["Dmitry Kouznetsov <dmitry.kouznetsov@imec.be>", "Orjan Ameye <orjan.ameye@imec.be>"]
+authors = ["Dmitry Kouznetsov <dmitry.kouznetsov@imec.be>", "Orjan Ameye <orjan.ameye@hotmail.com>"]
 version = "0.1.0"
 
 [deps]
@@ -16,4 +16,12 @@ Roots = "f2b01f46-fcfa-551c-844a-d8ac1e96c665"
 SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+
+[extras]
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+
+[targets]
+test = ["Pkg", "Test", "Logging", "Printf"]

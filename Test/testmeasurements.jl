@@ -10,17 +10,15 @@
 		s = Pimc.System(v1d)
 
 		updates = [
-			(2, CenterOfMass(s, 3.0)),
+			(2, SingleCenterOfMass(s, 3.0)),
 			(1, ReshapeLinear(s, 20)),
 			(1, ReshapeSwapLinear(s, 20))
 		]
 
-		d = Density(s)
-		measurements = [
-    		(10, d)
-			]
+        d = Density(s)
+        measurements = ZMeasurement[d]
 
-		run!(s, 10000, updates, measurements)
+		run!(s, 10000, updates, Zmeasurements=measurements)
 
 		# sanity check
 		numb = (sum(d.dens) / d.ndata)
@@ -32,4 +30,4 @@
 	end
 end
 
-end # @testset "Measurements" 
+end # @testset "Measurements"

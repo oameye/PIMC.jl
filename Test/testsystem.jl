@@ -3,40 +3,7 @@
 #     return
 # end
 
-function normalized_intensity(coord::Vector{Float64}, angles::Vector{Float64}, scale::Float64)::Float64
-    s, c = 0.0, 0.0
-
-    # Compute plane wave contributions for all laser beam orientations
-    for angle in angles
-        r = coord[1] * sin(angle) + coord[2] * cos(angle)
-        s += sin(2π * r * scale)
-        c += cos(2π * r * scale)
-    end
-
-    # Normalize max intensity to be 1
-    s /= length(angles)
-    c /= length(angles)
-
-    return (s * s + c * c)
-end
-
 @testset "System" begin
-
-@testset "Optical Lattice Potential" begin
-	@testset "Calculation" begin
-		# Initial conditions with known solution
-		cyclic_3 = [2π*k/3 for k in 0:2]
-		scale = 1.
-		depth = 1.
-
-		# For testing numerics use \approx
-		@test normalized_intensity([0.0, 0.0], cyclic_3, scale) ≈ 1.0
-
-		# Test 3 peaks of the unit cell
-		@test normalized_intensity([2/√3, 0.0], cyclic_3, scale) ≈ 1.0
-		@test normalized_intensity([0.0, 2/3], cyclic_3, scale) ≈ 1.0
-	end
-end
 
 @testset "System setup" begin
 	@testset "Initialization1d" begin
@@ -47,28 +14,10 @@ end
 
 		s = Pimc.System(v1d)
 
-		# Dummy test
-		@test s.N == 2
+		@test s.N == 2 #
 	end
 
     @testset "Initialization2d" begin
-        function normalized_intensity(coord::Vector{Float64}, angles::Vector{Float64}, scale::Float64)::Float64
-            s, c = 0.0, 0.0
-        
-            # Compute plane wave contributions for all laser beam orientations
-            for angle in angles
-                r = coord[1] * sin(angle) + coord[2] * cos(angle)
-                s += sin(2π * r * scale)
-                c += cos(2π * r * scale)
-            end
-        
-            # Normalize max intensity to be 1
-            s /= length(angles)
-            c /= length(angles)
-        
-            return (s * s + c * c)
-        end
-        
         function generate_V(angles::Vector{Float64}, scale::Float64, depth::Float64)::Function
             V(coord::Vector{Float64}) = depth*normalized_intensity(coord, angles, scale)
         end
@@ -78,7 +27,7 @@ end
         depth = 8.
         potential = generate_V(cyclic_4, scale, depth)
 
-        s = System(potential; dim=2, M=100, N=5, L=4., T=1)
+        s = System(potential; dim=2, M=100, N=5, L=4.0, T=1.0)
 
 		# Dummy test
 		@test s.N == 5
@@ -88,11 +37,11 @@ end
 @testset "Periodic Bounds" begin
     s = Pimc.System(x -> 0)
     updates = [
-        (2, CenterOfMass(s, 3.0)),
+        (2, SingleCenterOfMass(s, 3.0)),
         (1, ReshapeLinear(s, 20)),
         (1, ReshapeSwapLinear(s, 20))
     ]
-    
+
     run!(s, 10_000, updates)
 
     check = 0
