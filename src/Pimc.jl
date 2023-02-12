@@ -45,8 +45,8 @@ include("measurement.jl")
 # Perform updates/measurements to the system.
 # Each function comes with an integer that denotes the frequency of the Update.
 Updates = Vector{Tuple{Int64,A}} where {A <: Update}
-# ZMeasurements = Vector{ZMeasurement}
-# Measurements =  Vector{Measurement}
+ZMeasurements = Vector{ZMeasurement}
+Measurements = Vector{Measurement}
 
 acceptance(q::Queue{Bool})::Float64 = sum(q)/length(q)
 
@@ -59,7 +59,7 @@ function queue!(c::Counter, acc::Bool)::Nothing
     nothing
 end
 
-function measurement_Z_sector(s::System, measurements::Vector{ZMeasurement})::Nothing
+function measurement_Z_sector(s::System, measurements::ZMeasurements)::Nothing
     if isempty(measurements)
         return nothing
     end
@@ -87,7 +87,7 @@ function apply!(s::System, fs::Vector{Measurement})::Nothing
     end
     nothing
 end
-apply!(s::System, fs::Vector{ZMeasurement}) = apply!(s, Vector{Measurement}(fs))
+apply!(s::System, fs::ZMeasurements) = apply!(s,Measurements(fs))
 function apply!(s::System, f::UpdateC)::Nothing
     acc = f(s)
     queue!(f.counter, acc)
@@ -98,7 +98,7 @@ function apply!(s::System, f::UpdateC)::Nothing
     nothing
 end
 
-function run!(s::System, n::Int64, updates::Updates; Zmeasurements::Vector{ZMeasurement} = ZMeasurement[])::Nothing
+function run!(s::System, n::Int64, updates::Updates; Zmeasurements::ZMeasurements = ZMeasurement[])::Nothing
     # number of tries to sample beads outside hardsphere; smaller than in thermalization phase
     therm = isempty(Zmeasurements) ? true : false
     s.ctr = therm ? 10_000 : 1_000

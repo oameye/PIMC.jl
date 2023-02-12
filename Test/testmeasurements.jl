@@ -22,11 +22,11 @@
 
 		# sanity check
 		numb = (sum(d.dens) / d.ndata)
-		if abs(numb - s.N) > 1e-4
+		if abs(numb - s.N) > 1e-2
 			@error "Error save_density: integrated density = $numb, should be $(s.N) if x-range is ok"
 		end
 
-		@test numb ≈ s.N atol=1e-1
+		@test isapprox(numb, s.N, atol=1e-2)
 	end
 end
 
