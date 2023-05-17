@@ -18,9 +18,9 @@ To install CPIMC, you can use the Julia package manager. Start the Julia REPL an
 ```
 
 ## Usage
-To use CPIMC, simply import the package in your Julia script:
+To use PIMC, simply import the package in your Julia script:
 ```julia
-using CPIMC
+using PIMC
 ```
 
 Look in the `example` folder for example how to use the package.
