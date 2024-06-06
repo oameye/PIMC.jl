@@ -35,5 +35,11 @@ Commit your changes and push the branch to your fork on Github
 Create a pull request to merge your changes into the main repository
 We appreciate any contributions, whether it be fixing bugs, adding new features, or improving the documentation.
 
+## Similar packages
+
+* https://github.com/DelMaestroGroup/pimc 
+* https://github.com/QuantumBFS/Pathintegral-QMC.jl
+* https://github.com/amaciarey/PathIntegralGroundState
+* 
 ## License
 PIMC is released under the MIT License. See the LICENSE file for more information
