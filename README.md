@@ -1,9 +1,9 @@
 # Path Integral Monte Carlo
 
-PIMC.jl is a Julia package that implements the ab-initio continuous path integral Monte Carlo method, as presented by D. Ceperley (1995) and Boninsegni, et al. (2006).
-The method provides an efficient way to compute quantum-mechanical properties of a many-body system at finite temperature.
+PIMC.jl is a Julia package that implements the **ab-initio continuous path integral Monte Carlo method**, as presented by *D. Ceperley (1995)* and *Boninsegni, et al. (2006)*.
+The method provides an efficient way to compute quantum-mechanical properties of a many-body system at **finite temperature**.
 
-The continuous path integral Monte Carlo method is a statistical technique that uses random sampling to compute properties of a quantum system. In this method, the quantum partition function is approximated by a classical statistical mechanical system in which the particles are represented by continuous paths in imaginary time. The method takes advantage of the fact that at high temperatures, the quantum paths are relatively smooth and can be well approximated by classical paths. 
+The **continuous path integral Monte Carlo** method is a statistical technique that uses random sampling to compute properties of a quantum system. In this method, the quantum partition function is approximated by a classical statistical mechanical system in which the particles are represented by continuous paths in imaginary time. The method takes advantage of the fact that at high temperatures, the quantum paths are relatively smooth and can be well approximated by classical paths. 
 
 In PIMC, the continuous paths are sampled using a Monte Carlo algorithm, which generates a set of random paths that are used to estimate the thermodynamic properties of the system. The key idea is to weight each path according to its quantum mechanical probability, so that the statistical average over all paths approximates the true quantum mechanical average. The method has been shown to be highly efficient and accurate, making it a powerful tool for studying many-body quantum systems.
 
