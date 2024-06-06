@@ -1,6 +1,5 @@
 # Path Integral Monte Carlo
 
-
 PIMC.jl is a Julia package that implements the ab-initio continuous path integral Monte Carlo method, as presented by D. Ceperley (1995) and Boninsegni, et al. (2006).
 The method provides an efficient way to compute quantum-mechanical properties of a many-body system at finite temperature.
 
@@ -11,7 +10,7 @@ In PIMC, the continuous paths are sampled using a Monte Carlo algorithm, which g
 
 ## Installation
 
-To install CPIMC, you can use the Julia package manager. Start the Julia REPL and run the following command:
+To install PIMC, you can use the Julia package manager. Start the Julia REPL and run the following command:
 
 ```julia
 ] add https://github.com/oameye/PIMC.jl
